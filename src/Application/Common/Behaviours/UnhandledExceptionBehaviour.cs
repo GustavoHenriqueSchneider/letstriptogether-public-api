@@ -1,0 +1,46 @@
+using Application.Common.Exceptions;
+using MediatR;
+using Microsoft.Extensions.Logging;
+
+namespace Application.Common.Behaviours;
+
+public class UnhandledExceptionBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
+    where TRequest : IRequest<TResponse>
+{
+    private readonly ILogger<UnhandledExceptionBehaviour<TRequest, TResponse>> _logger;
+
+    public UnhandledExceptionBehaviour(ILogger<UnhandledExceptionBehaviour<TRequest, TResponse>> logger)
+    {
+        _logger = logger;
+    }
+
+    public async Task<TResponse> Handle(
+        TRequest request,
+        RequestHandlerDelegate<TResponse> next,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            return await next();
+        }
+        catch (Exception ex)
+        {
+            if (ex is BaseException)
+            {
+                _logger.LogWarning(
+                    "Custom exception in handler: {ExceptionType} - {Message}",
+                    ex.GetType().Name,
+                    ex.Message);
+                throw;
+            }
+
+            _logger.LogError(
+                ex,
+                "Unhandled exception in handler: {RequestType} - {Message}",
+                typeof(TRequest).Name,
+                ex.Message);
+
+            throw;
+        }
+    }
+}
