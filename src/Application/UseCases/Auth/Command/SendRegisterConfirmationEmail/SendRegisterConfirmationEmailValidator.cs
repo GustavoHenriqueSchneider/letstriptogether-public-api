@@ -14,6 +14,7 @@ public class SendRegisterConfirmationEmailValidator : AbstractValidator<SendRegi
             .MaximumLength(NameMaxLength);
         
         RuleFor(x => x.Email)
+            .NotEmpty()
             .SetValidator(new EmailValidator());
     }
 }

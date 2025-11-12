@@ -8,6 +8,7 @@ public class RegisterValidator : AbstractValidator<RegisterCommand>
     public RegisterValidator()
     {
         RuleFor(x => x.Password)
+            .NotEmpty()
             .SetValidator(new PasswordValidator());
 
         RuleFor(x => x.HasAcceptedTermsOfUse)

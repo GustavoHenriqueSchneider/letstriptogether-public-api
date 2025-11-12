@@ -208,7 +208,7 @@ public class InternalApiService(IHttpClientService httpClientService) : IInterna
         CancelActiveGroupInvitationCommand request, CancellationToken cancellationToken)
     {
         await httpClientService.PatchAsync(
-            $"v1/groups/{request.GroupId}/invitations/cancel", null, cancellationToken);
+            $"v1/groups/{request.GroupId}/invitations/cancel", request, cancellationToken);
     }
 
     // GroupMatch

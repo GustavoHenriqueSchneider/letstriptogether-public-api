@@ -1,7 +1,9 @@
 using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
+using Application.Common.Exceptions;
 using Application.Common.Interfaces.Services;
+using Domain.Common.Exceptions;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 
@@ -38,154 +40,89 @@ public class HttpClientService : IHttpClientService
             httpRequestMessage.Headers.Add("Authorization", authorizationHeader);
         }
     }
-
-    private async Task<HttpResponseMessage> InternalPostAsync(string url, IBaseRequest request,
-        CancellationToken cancellationToken)
+    
+    private async Task<HttpResponseMessage> SendRequestAsync(HttpMethod method, string url, 
+        IBaseRequest? request = null, CancellationToken cancellationToken = default)
     {
-        var json = JsonSerializer.Serialize(request, request.GetType(), JsonOptions);
-        var content = new StringContent(json, Encoding.UTF8, "application/json");
-
-        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, url)
+        var httpRequestMessage = method.ToString() switch
         {
-            Content = content
+            "GET" => new HttpRequestMessage(HttpMethod.Get, url),
+            "POST" => new HttpRequestMessage(HttpMethod.Post, url),
+            "PUT" => new HttpRequestMessage(HttpMethod.Put, url),
+            "DELETE" => new HttpRequestMessage(HttpMethod.Delete, url),
+            _ => new HttpRequestMessage(HttpMethod.Patch, url)
         };
 
+        if (request is not null)
+        {
+            var json = JsonSerializer.Serialize(request, request.GetType(), JsonOptions);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            httpRequestMessage.Content = content;
+        }
+        
         SetAuthentication(httpRequestMessage);
-
+        
         var response = await _httpClient.SendAsync(httpRequestMessage, cancellationToken);
-        response.EnsureSuccessStatusCode();
 
-        return response;
+        try
+        {
+            response.EnsureSuccessStatusCode();
+            return response;
+        }
+        catch (HttpRequestException ex)
+        {
+            var content = await GetContentAsync<BaseException>(response, cancellationToken);
+
+            throw (int?)ex.StatusCode switch
+            {
+                400 => new BadRequestException(content.Message),
+                401 => new UnauthorizedAccessException(content.Message),
+                403 => new ForbiddenException(content.Message),
+                404 => new NotFoundException(content.Message),
+                409 => new ConflictException(content.Message),
+                415 => new UnsupportedMediaTypeException(content.Message),
+                422 => new DomainBusinessRuleException(content.Message, content.Title),
+                _ => new InternalServerErrorException(content.Message)
+            };
+        }
     }
-
+    
+    private async Task<T> GetContentAsync<T>(HttpResponseMessage response, CancellationToken cancellationToken)
+    {
+        return await response.Content.ReadFromJsonAsync<T>(JsonOptions, cancellationToken)
+               ?? throw new ArgumentNullException("Response must be returned", nameof(response.Content));
+    }
+    
     public async Task<T> PostAsync<T>(string url, IBaseRequest request,
         CancellationToken cancellationToken) where T : class
     {
-        var response = await InternalPostAsync(url, request, cancellationToken);
-
-        return await response.Content.ReadFromJsonAsync<T>(JsonOptions, cancellationToken)
-            ?? throw new ArgumentNullException("Response must be returned", nameof(response.Content));
+        var response = await SendRequestAsync(HttpMethod.Post, url, request, cancellationToken);
+        return await GetContentAsync<T>(response, cancellationToken);
     }
 
     public async Task PostAsync(string url, IBaseRequest request, CancellationToken cancellationToken)
     {
-        await InternalPostAsync(url, request, cancellationToken);
-    }
-
-    private async Task<HttpResponseMessage> InternalGetAsync(string url, CancellationToken cancellationToken)
-    {
-        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, url);
-        SetAuthentication(httpRequestMessage);
-
-        var response = await _httpClient.SendAsync(httpRequestMessage, cancellationToken);
-        response.EnsureSuccessStatusCode();
-
-        return response;
+        await SendRequestAsync(HttpMethod.Post, url, request, cancellationToken);
     }
 
     public async Task<T> GetAsync<T>(string url, CancellationToken cancellationToken) where T : class
     {
-        var response = await InternalGetAsync(url, cancellationToken);
-
-        return await response.Content.ReadFromJsonAsync<T>(JsonOptions, cancellationToken)
-            ?? throw new ArgumentNullException("Response must be returned", nameof(response.Content));
+        var response = await SendRequestAsync(HttpMethod.Get, url, cancellationToken: cancellationToken);
+        return await GetContentAsync<T>(response, cancellationToken);
     }
 
-    private async Task<HttpResponseMessage> InternalPutAsync(string url, IBaseRequest? request,
-        CancellationToken cancellationToken)
+    public async Task PutAsync(string url, IBaseRequest request, CancellationToken cancellationToken)
     {
-        HttpRequestMessage httpRequestMessage;
-
-        if (request != null)
-        {
-            var json = JsonSerializer.Serialize(request, request.GetType(), JsonOptions);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
-            httpRequestMessage = new HttpRequestMessage(HttpMethod.Put, url) { Content = content };
-        }
-        else
-        {
-            httpRequestMessage = new HttpRequestMessage(HttpMethod.Put, url);
-        }
-
-        SetAuthentication(httpRequestMessage);
-
-        var response = await _httpClient.SendAsync(httpRequestMessage, cancellationToken);
-        response.EnsureSuccessStatusCode();
-
-        return response;
-    }
-
-    public async Task<T> PutAsync<T>(string url, IBaseRequest? request, CancellationToken cancellationToken) where T : class
-    {
-        var response = await InternalPutAsync(url, request, cancellationToken);
-
-        return await response.Content.ReadFromJsonAsync<T>(JsonOptions, cancellationToken)
-            ?? throw new ArgumentNullException("Response must be returned", nameof(response.Content));
-    }
-
-    public async Task PutAsync(string url, IBaseRequest? request, CancellationToken cancellationToken)
-    {
-        await InternalPutAsync(url, request, cancellationToken);
-    }
-
-    private async Task<HttpResponseMessage> InternalDeleteAsync(string url, CancellationToken cancellationToken)
-    {
-        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Delete, url);
-        SetAuthentication(httpRequestMessage);
-
-        var response = await _httpClient.SendAsync(httpRequestMessage, cancellationToken);
-        response.EnsureSuccessStatusCode();
-
-        return response;
-    }
-
-    public async Task<T> DeleteAsync<T>(string url, CancellationToken cancellationToken) where T : class
-    {
-        var response = await InternalDeleteAsync(url, cancellationToken);
-
-        return await response.Content.ReadFromJsonAsync<T>(JsonOptions, cancellationToken)
-            ?? throw new ArgumentNullException("Response must be returned", nameof(response.Content));
+        await SendRequestAsync(HttpMethod.Put, url, request, cancellationToken: cancellationToken);
     }
 
     public async Task DeleteAsync(string url, CancellationToken cancellationToken)
     {
-        await InternalDeleteAsync(url, cancellationToken);
+        await SendRequestAsync(HttpMethod.Delete, url, cancellationToken: cancellationToken);
     }
 
-    private async Task<HttpResponseMessage> InternalPatchAsync(string url, IBaseRequest? request,
-        CancellationToken cancellationToken)
+    public async Task PatchAsync(string url, IBaseRequest request, CancellationToken cancellationToken)
     {
-        HttpRequestMessage httpRequestMessage;
-
-        if (request != null)
-        {
-            var json = JsonSerializer.Serialize(request, request.GetType(), JsonOptions);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
-            httpRequestMessage = new HttpRequestMessage(HttpMethod.Patch, url) { Content = content };
-        }
-        else
-        {
-            httpRequestMessage = new HttpRequestMessage(HttpMethod.Patch, url);
-        }
-
-        SetAuthentication(httpRequestMessage);
-
-        var response = await _httpClient.SendAsync(httpRequestMessage, cancellationToken);
-        response.EnsureSuccessStatusCode();
-
-        return response;
-    }
-
-    public async Task<T> PatchAsync<T>(string url, IBaseRequest? request, CancellationToken cancellationToken) where T : class
-    {
-        var response = await InternalPatchAsync(url, request, cancellationToken);
-
-        return await response.Content.ReadFromJsonAsync<T>(JsonOptions, cancellationToken)
-            ?? throw new ArgumentNullException("Response must be returned", nameof(response.Content));
-    }
-
-    public async Task PatchAsync(string url, IBaseRequest? request, CancellationToken cancellationToken)
-    {
-        await InternalPatchAsync(url, request, cancellationToken);
+        await SendRequestAsync(HttpMethod.Patch, url, request, cancellationToken: cancellationToken);
     }
 }

@@ -1,11 +1,13 @@
 namespace Application.Common.Exceptions;
 
-public abstract class BaseException : Exception
+public class BaseException : Exception
 {
     public int StatusCode { get; }
     
     public string? Title { get; }
 
+    public BaseException() { }
+    
     protected BaseException(
         string message,
         int statusCode,
