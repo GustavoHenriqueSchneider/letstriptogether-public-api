@@ -88,8 +88,7 @@ public class AuthController(IMediator mediator) : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Logout(CancellationToken cancellationToken)
     {
-        var command = new LogoutCommand();
-        await mediator.Send(command, cancellationToken);
+        await mediator.Send(new LogoutCommand(), cancellationToken);
         return NoContent();
     }
 

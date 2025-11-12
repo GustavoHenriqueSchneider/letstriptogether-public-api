@@ -9,6 +9,7 @@ public class Startup(IConfiguration configuration, IWebHostEnvironment environme
     public void ConfigureServices(IServiceCollection services)
     {
         services.RegisterApplicationUseCases();
+        services.RegisterApplicationAuthentication(configuration);
         services.RegisterApplicationExternalDependencies(configuration);
         services.RegisterApplicationApiServices();
         services.AddHealthChecks();
@@ -46,6 +47,9 @@ public class Startup(IConfiguration configuration, IWebHostEnvironment environme
 
         app.UseHttpsRedirection();
         app.UseRouting();
+
+        app.UseAuthentication();
+        app.UseAuthorization();
 
         app.UseEndpoints(endpoints =>
         {
