@@ -1,11 +1,11 @@
-using Microsoft.AspNetCore.Http;
+using Domain.Common.Exceptions;
 
 namespace Application.Common.Exceptions;
 
 public class InternalServerErrorException : BaseException
 {
-    public InternalServerErrorException(string message, Exception? innerException = null)
-        : base(message, StatusCodes.Status500InternalServerError, "Internal Server Error", innerException)
+    public InternalServerErrorException(InternalApiException apiException)
+        : base(apiException)
     {
     }
 }

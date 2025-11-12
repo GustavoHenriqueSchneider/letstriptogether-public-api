@@ -1,11 +1,11 @@
-using Microsoft.AspNetCore.Http;
+using Domain.Common.Exceptions;
 
 namespace Application.Common.Exceptions;
 
 public class UnsupportedMediaTypeException : BaseException
 {
-    public UnsupportedMediaTypeException(string message, Exception? innerException = null)
-        : base(message, StatusCodes.Status415UnsupportedMediaType, "Unsupported Media Type", innerException)
+    public UnsupportedMediaTypeException(InternalApiException apiException)
+        : base(apiException)
     {
     }
 }

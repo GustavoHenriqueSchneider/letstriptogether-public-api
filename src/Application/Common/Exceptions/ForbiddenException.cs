@@ -1,11 +1,11 @@
-using Microsoft.AspNetCore.Http;
+using Domain.Common.Exceptions;
 
 namespace Application.Common.Exceptions;
 
 public class ForbiddenException : BaseException
 {
-    public ForbiddenException(string message = "Forbidden", Exception? innerException = null)
-        : base(message, StatusCodes.Status403Forbidden, "Forbidden", innerException)
+    public ForbiddenException(InternalApiException apiException)
+        : base(apiException)
     {
     }
 }

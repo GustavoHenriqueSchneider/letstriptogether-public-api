@@ -71,18 +71,18 @@ public class HttpClientService : IHttpClientService
         }
         catch (HttpRequestException ex)
         {
-            var content = await GetContentAsync<BaseException>(response, cancellationToken);
+            var content = await GetContentAsync<InternalApiException>(response, cancellationToken);
 
             throw (int?)ex.StatusCode switch
             {
-                400 => new BadRequestException(content.Message),
-                401 => new UnauthorizedAccessException(content.Message),
-                403 => new ForbiddenException(content.Message),
-                404 => new NotFoundException(content.Message),
-                409 => new ConflictException(content.Message),
-                415 => new UnsupportedMediaTypeException(content.Message),
-                422 => new DomainBusinessRuleException(content.Message, content.Title),
-                _ => new InternalServerErrorException(content.Message)
+                400 => new BadRequestException(content),
+                401 => new UnauthorizedException(content),
+                403 => new ForbiddenException(content),
+                404 => new NotFoundException(content),
+                409 => new ConflictException(content),
+                415 => new UnsupportedMediaTypeException(content),
+                422 => new DomainBusinessRuleException(content),
+                _ => new InternalServerErrorException(content)
             };
         }
     }

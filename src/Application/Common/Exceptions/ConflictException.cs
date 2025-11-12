@@ -1,11 +1,11 @@
-using Microsoft.AspNetCore.Http;
+using Domain.Common.Exceptions;
 
 namespace Application.Common.Exceptions;
 
 public class ConflictException : BaseException
 {
-    public ConflictException(string message, Exception? innerException = null)
-        : base(message, StatusCodes.Status409Conflict, "Conflict", innerException)
+    public ConflictException(InternalApiException apiException)
+        : base(apiException)
     {
     }
 }

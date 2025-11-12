@@ -5,10 +5,10 @@ public class DomainBusinessRuleException : Exception
     public int StatusCode { get; } = 422;
     
     public string? Title { get; }
-
-    public DomainBusinessRuleException(string message, string? title = null, Exception? innerException = null)
-        : base(message, innerException)
+    
+    public DomainBusinessRuleException(InternalApiException internalApiException)
+        : base(internalApiException.Detail, null)
     {
-        Title = title ?? "Business Rule Violation";
+        Title = internalApiException.Title;
     }
 }
