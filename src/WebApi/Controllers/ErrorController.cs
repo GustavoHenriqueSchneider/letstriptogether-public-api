@@ -47,7 +47,6 @@ public class ErrorController : ControllerBase
             default:
                 problemDetails.Status = StatusCodes.Status500InternalServerError;
                 problemDetails.Title = "An error occurred while processing your request";
-                problemDetails.Detail = exception?.Message;
                 break;
         }
 
