@@ -40,7 +40,6 @@ namespace Infrastructure.Services;
 
 public class InternalApiService(IHttpClientService httpClientService) : IInternalApiService
 {
-    // Auth
     public async Task<LoginResponse> LoginAsync(LoginCommand request, CancellationToken cancellationToken)
     {
         return await httpClientService.PostAsync<LoginResponse>("v1/auth/login", request, cancellationToken);
@@ -85,7 +84,6 @@ public class InternalApiService(IHttpClientService httpClientService) : IInterna
             "v1/auth/email/validate", request, cancellationToken);
     }
 
-    // User
     public async Task<GetCurrentUserResponse> GetCurrentUserAsync(GetCurrentUserQuery request, CancellationToken cancellationToken)
     {
         return await httpClientService.GetAsync<GetCurrentUserResponse>("v1/users/me", cancellationToken);
@@ -111,7 +109,6 @@ public class InternalApiService(IHttpClientService httpClientService) : IInterna
         await httpClientService.PutAsync("v1/users/me/preferences", request, cancellationToken);
     }
 
-    // Group
     public async Task<CreateGroupResponse> CreateGroupAsync(CreateGroupCommand request, CancellationToken cancellationToken)
     {
         return await httpClientService.PostAsync<CreateGroupResponse>("v1/groups", request, cancellationToken);
@@ -152,7 +149,6 @@ public class InternalApiService(IHttpClientService httpClientService) : IInterna
             cancellationToken);
     }
 
-    // Destination
     public async Task<GetDestinationByIdResponse> GetDestinationByIdAsync(
         GetDestinationByIdQuery request, CancellationToken cancellationToken)
     {
@@ -160,7 +156,6 @@ public class InternalApiService(IHttpClientService httpClientService) : IInterna
             $"v1/destinations/{request.DestinationId}", cancellationToken);
     }
 
-    // GroupDestinationVote
     public async Task<VoteAtDestinationForGroupIdResponse> VoteAtDestinationForGroupIdAsync(
         VoteAtDestinationForGroupIdCommand request, CancellationToken cancellationToken)
     {
@@ -189,7 +184,6 @@ public class InternalApiService(IHttpClientService httpClientService) : IInterna
             cancellationToken);
     }
 
-    // GroupInvitation
     public async Task<CreateGroupInvitationResponse> CreateGroupInvitationAsync(
         CreateGroupInvitationCommand request, CancellationToken cancellationToken)
     {
@@ -211,7 +205,6 @@ public class InternalApiService(IHttpClientService httpClientService) : IInterna
             $"v1/groups/{request.GroupId}/invitations/cancel", request, cancellationToken);
     }
 
-    // GroupMatch
     public async Task<GetAllGroupMatchesByIdResponse> GetAllGroupMatchesByIdAsync(
         GetAllGroupMatchesByIdQuery request, CancellationToken cancellationToken)
     {
@@ -234,7 +227,6 @@ public class InternalApiService(IHttpClientService httpClientService) : IInterna
             $"v1/groups/{request.GroupId}/matches/{request.MatchId}", cancellationToken);
     }
 
-    // GroupMember
     public async Task<GetOtherGroupMembersByIdResponse> GetOtherGroupMembersByIdAsync(
         GetOtherGroupMembersByIdQuery request, CancellationToken cancellationToken)
     {
@@ -257,7 +249,6 @@ public class InternalApiService(IHttpClientService httpClientService) : IInterna
             $"v1/groups/{request.GroupId}/members/{request.MemberId}", cancellationToken);
     }
 
-    // Invitation
     public async Task AcceptInvitationAsync(AcceptInvitationCommand request, CancellationToken cancellationToken)
     {
         await httpClientService.PostAsync("v1/invitations/accept", request, cancellationToken);

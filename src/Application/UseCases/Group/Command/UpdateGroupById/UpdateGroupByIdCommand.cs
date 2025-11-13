@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using MediatR;
 
 namespace Application.UseCases.Group.Command.UpdateGroupById;

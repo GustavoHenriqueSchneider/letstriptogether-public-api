@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Reflection;
 using Application.Common.Behaviours;
 using FluentValidation;
@@ -16,7 +17,10 @@ public static class DependencyInjection
         Assembly assembly, Action<MediatRServiceConfiguration>? mediator = null)
     {
         services.AddAutoMapper(assembly);
+        
+        ValidatorOptions.Global.LanguageManager.Culture = new CultureInfo("en-US");
         services.AddValidatorsFromAssembly(assembly);
+
         services.AddMediatR(configuration =>
         {
             configuration.RegisterServicesFromAssembly(assembly);

@@ -39,7 +39,6 @@ namespace Application.Common.Interfaces.Services;
 
 public interface IInternalApiService
 {
-    // Auth
     Task<LoginResponse> LoginAsync(LoginCommand request, CancellationToken cancellationToken);
     Task LogoutAsync(LogoutCommand request, CancellationToken cancellationToken);
     Task<RefreshTokenResponse> RefreshTokenAsync(RefreshTokenCommand request, CancellationToken cancellationToken);
@@ -50,15 +49,11 @@ public interface IInternalApiService
         SendRegisterConfirmationEmailCommand request, CancellationToken cancellationToken);
     Task<ValidateRegisterConfirmationCodeResponse> ValidateRegisterConfirmationCodeAsync(
         ValidateRegisterConfirmationCodeCommand request, CancellationToken cancellationToken);
-    
-    // User
     Task<GetCurrentUserResponse> GetCurrentUserAsync(GetCurrentUserQuery request, CancellationToken cancellationToken);
     Task UpdateCurrentUserAsync(UpdateCurrentUserCommand request, CancellationToken cancellationToken);
     Task DeleteCurrentUserAsync(DeleteCurrentUserCommand request, CancellationToken cancellationToken);
     Task AnonymizeCurrentUserAsync(AnonymizeCurrentUserCommand request, CancellationToken cancellationToken);
     Task SetCurrentUserPreferencesAsync(SetCurrentUserPreferencesCommand request, CancellationToken cancellationToken);
-    
-    // Group
     Task<CreateGroupResponse> CreateGroupAsync(CreateGroupCommand request, CancellationToken cancellationToken);
     Task<GetAllGroupsResponse> GetAllGroupsAsync(GetAllGroupsQuery request, CancellationToken cancellationToken);
     Task<GetGroupByIdResponse> GetGroupByIdAsync(GetGroupByIdQuery request, CancellationToken cancellationToken);
@@ -67,11 +62,7 @@ public interface IInternalApiService
     Task LeaveGroupByIdAsync(LeaveGroupByIdCommand request, CancellationToken cancellationToken);
     Task<GetNotVotedDestinationsByMemberOnGroupResponse> GetNotVotedDestinationsByMemberOnGroupAsync(
         GetNotVotedDestinationsByMemberOnGroupQuery request, CancellationToken cancellationToken);
-    
-    // Destination
     Task<GetDestinationByIdResponse> GetDestinationByIdAsync(GetDestinationByIdQuery request, CancellationToken cancellationToken);
-    
-    // GroupDestinationVote
     Task<VoteAtDestinationForGroupIdResponse> VoteAtDestinationForGroupIdAsync(
         VoteAtDestinationForGroupIdCommand request, CancellationToken cancellationToken);
     Task UpdateDestinationVoteByIdAsync(UpdateDestinationVoteByIdCommand request, CancellationToken cancellationToken);
@@ -79,30 +70,22 @@ public interface IInternalApiService
         GetGroupDestinationVoteByIdQuery request, CancellationToken cancellationToken);
     Task<GetGroupMemberAllDestinationVotesByIdResponse> GetGroupMemberAllDestinationVotesByIdAsync(
         GetGroupMemberAllDestinationVotesByIdQuery request, CancellationToken cancellationToken);
-    
-    // GroupInvitation
     Task<CreateGroupInvitationResponse> CreateGroupInvitationAsync(
         CreateGroupInvitationCommand request, CancellationToken cancellationToken);
     Task<GetActiveGroupInvitationResponse> GetActiveGroupInvitationAsync(
         GetActiveGroupInvitationQuery request, CancellationToken cancellationToken);
     Task CancelActiveGroupInvitationAsync(
         CancelActiveGroupInvitationCommand request, CancellationToken cancellationToken);
-    
-    // GroupMatch
     Task<GetAllGroupMatchesByIdResponse> GetAllGroupMatchesByIdAsync(
         GetAllGroupMatchesByIdQuery request, CancellationToken cancellationToken);
     Task<GetGroupMatchByIdResponse> GetGroupMatchByIdAsync(
         GetGroupMatchByIdQuery request, CancellationToken cancellationToken);
     Task RemoveGroupMatchByIdAsync(RemoveGroupMatchByIdCommand request, CancellationToken cancellationToken);
-    
-    // GroupMember
     Task<GetOtherGroupMembersByIdResponse> GetOtherGroupMembersByIdAsync(
         GetOtherGroupMembersByIdQuery request, CancellationToken cancellationToken);
     Task<GetGroupMemberByIdResponse> GetGroupMemberByIdAsync(
         GetGroupMemberByIdQuery request, CancellationToken cancellationToken);
     Task RemoveGroupMemberByIdAsync(RemoveGroupMemberByIdCommand request, CancellationToken cancellationToken);
-    
-    // Invitation
     Task AcceptInvitationAsync(AcceptInvitationCommand request, CancellationToken cancellationToken);
     Task RefuseInvitationAsync(RefuseInvitationCommand request, CancellationToken cancellationToken);
 }
