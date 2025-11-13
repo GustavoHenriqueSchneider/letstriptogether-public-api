@@ -13,6 +13,15 @@ public class Startup(IConfiguration configuration, IWebHostEnvironment environme
         services.RegisterApplicationExternalDependencies(configuration);
         services.RegisterApplicationApiServices();
         services.AddHealthChecks();
+        
+        var allowedOrigins = 
+            configuration.GetRequiredSection("CorsSettings:AllowedOrigins").Get<string[]>();
+        
+        services.AddCors(options => 
+            options.AddDefaultPolicy(builder => 
+                builder.WithOrigins(allowedOrigins!).AllowAnyMethod().AllowAnyHeader().AllowCredentials()));
+        
+        services.AddSignalR(options => options.EnableDetailedErrors = environment.IsDevelopment());
     }
 
     public void Configure(
@@ -47,6 +56,7 @@ public class Startup(IConfiguration configuration, IWebHostEnvironment environme
         }
         
         app.UseRouting();
+        app.UseCors();
 
         app.UseAuthentication();
         app.UseAuthorization();
@@ -55,6 +65,7 @@ public class Startup(IConfiguration configuration, IWebHostEnvironment environme
         {
             endpoints.MapControllers();
             endpoints.MapHealthChecks("/health");
+            endpoints.MapHub<Hubs.NotificationHub>("/hubs/notifications");
         });
     }
 }

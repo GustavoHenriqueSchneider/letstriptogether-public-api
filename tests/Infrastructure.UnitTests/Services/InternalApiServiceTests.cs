@@ -318,8 +318,8 @@ public class InternalApiServiceTests
         // Arrange
         var command = new SetCurrentUserPreferencesCommand 
         { 
-            LikesCommercial = false,
-            Food = new List<string> { "Italian" },
+            LikesShopping = false,
+            LikesGastronomy = true,
             Culture = new List<string> { "Museums" },
             Entertainment = new List<string> { "Concerts" },
             PlaceTypes = new List<string> { "Beach" }
@@ -407,8 +407,8 @@ public class InternalApiServiceTests
             CreatedAt = DateTime.UtcNow,
             Preferences = new GetGroupByIdPreferenceResponse
             {
-                LikesCommercial = true,
-                Food = new List<string>(),
+                LikesShopping = true,
+                LikesGastronomy = true,
                 Culture = new List<string>(),
                 Entertainment = new List<string>(),
                 PlaceTypes = new List<string>()

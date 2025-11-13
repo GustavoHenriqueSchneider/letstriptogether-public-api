@@ -2,18 +2,6 @@ using FluentValidation;
 
 namespace Application.Common.Validators;
 
-public class FoodPreferencesValidator : AbstractValidator<IEnumerable<string>>
-{
-    public FoodPreferencesValidator()
-    {
-        RuleFor(x => x)
-            .NotEmpty();
-
-        RuleForEach(x => x)
-            .NotEmpty();
-    }
-}
-
 public class CulturePreferencesValidator : AbstractValidator<IEnumerable<string>>
 {
     public CulturePreferencesValidator()

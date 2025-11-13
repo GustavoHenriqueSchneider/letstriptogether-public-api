@@ -77,8 +77,8 @@ public class GroupControllerTests
             UpdatedAt = DateTime.UtcNow,
             Preferences = new GetGroupByIdPreferenceResponse
             {
-                LikesCommercial = true,
-                Food = new List<string>(),
+                LikesShopping = true,
+                LikesGastronomy = true,
                 Culture = new List<string>(),
                 Entertainment = new List<string>(),
                 PlaceTypes = new List<string>()

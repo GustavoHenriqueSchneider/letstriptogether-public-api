@@ -1,7 +1,10 @@
 using System.Globalization;
 using System.Reflection;
 using Application.Common.Behaviours;
+using Application.Common.Extensions;
+using Application.Common.Interfaces.Extensions;
 using FluentValidation;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Application;
@@ -31,5 +34,13 @@ public static class DependencyInjection
         });
 
         services.AddHttpContextAccessor();
+        
+        services.AddScoped<IApplicationUserContextExtensions>(provider =>
+        {
+            var httpContextAccessor = provider.GetRequiredService<IHttpContextAccessor>();
+            var principal = httpContextAccessor.HttpContext?.User 
+                ?? throw new InvalidOperationException("HttpContext or User is not available");
+            return new ApplicationUserContextExtensions(principal);
+        });
     }
 }

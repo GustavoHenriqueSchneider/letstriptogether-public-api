@@ -37,8 +37,8 @@ public class UserControllerTests
             UpdatedAt = DateTime.UtcNow,
             Preferences = new GetCurrentUserPreferenceResponse
             {
-                LikesCommercial = true,
-                Food = new List<string>(),
+                LikesShopping = true,
+                LikesGastronomy = true,
                 Culture = new List<string>(),
                 Entertainment = new List<string>(),
                 PlaceTypes = new List<string>()
@@ -111,8 +111,8 @@ public class UserControllerTests
         // Arrange
         var command = new SetCurrentUserPreferencesCommand
         {
-            LikesCommercial = true,
-            Food = new List<string>(),
+            LikesShopping = true,
+            LikesGastronomy = true,
             Culture = new List<string>(),
             Entertainment = new List<string>(),
             PlaceTypes = new List<string>()

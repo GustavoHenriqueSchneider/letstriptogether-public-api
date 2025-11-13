@@ -32,8 +32,8 @@ public class GetCurrentUserHandlerTests
             UpdatedAt = DateTime.UtcNow,
             Preferences = new GetCurrentUserPreferenceResponse
             {
-                LikesCommercial = true,
-                Food = new List<string> { "Italian" },
+                LikesShopping = true,
+                LikesGastronomy = true,
                 Culture = new List<string> { "Museums" },
                 Entertainment = new List<string> { "Concerts" },
                 PlaceTypes = new List<string> { "Beach" }
