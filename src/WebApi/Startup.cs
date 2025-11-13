@@ -25,6 +25,7 @@ public class Startup(IConfiguration configuration, IWebHostEnvironment environme
         if (!environment.IsDevelopment())
         {
             app.UseHsts();
+            app.UseHttpsRedirection();
         }
 
         var swaggerEnabled = configuration.GetValue("Swagger:Enabled", true);
@@ -44,8 +45,7 @@ public class Startup(IConfiguration configuration, IWebHostEnvironment environme
                 options.DocumentTitle = "LetsTripTogether Public API";
             });
         }
-
-        app.UseHttpsRedirection();
+        
         app.UseRouting();
 
         app.UseAuthentication();

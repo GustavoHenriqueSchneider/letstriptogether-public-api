@@ -1,6 +1,8 @@
 using System.Text;
+using Application.Common.Interfaces;
 using Application.Common.Interfaces.Services;
 using Infrastructure.Configurations;
+using Infrastructure.Events.GroupMatchCreated;
 using Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
@@ -46,7 +48,7 @@ public static class DependencyInjection
 
     private static void AddServices(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddHttpClient<IHttpClientService, HttpClientService>((_, client) =>
+        services.AddHttpClient<IHttpClientService, HttpClientService>((serviceProvider, client) =>
         {
             var internalApiSettings = configuration
                 .GetRequiredSection(nameof(InternalApiSettings))
@@ -56,5 +58,11 @@ public static class DependencyInjection
         });
 
         services.AddTransient<IInternalApiService, InternalApiService>();
+        services.RegisterNotificationEventHandlers();
+    }
+
+    private static void RegisterNotificationEventHandlers(this IServiceCollection services)
+    {
+        services.AddScoped<INotificationEventHandler, GroupMatchCreatedEventHandler>();
     }
 }
