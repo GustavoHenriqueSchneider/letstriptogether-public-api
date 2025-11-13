@@ -1,0 +1,20 @@
+using System.Security.Claims;
+using Application.Common.Interfaces.Extensions;
+using Domain.Security;
+
+namespace Application.Common.Extensions;
+
+public class ApplicationUserContextExtensions(ClaimsPrincipal principal) 
+    : IApplicationUserContextExtensions
+{
+    public Guid GetId()
+    {
+        var id = principal.FindFirst(Claims.Id)?.Value;
+        return Guid.TryParse(id, out var guid) ? guid : Guid.Empty;
+    }
+
+    public string GetTokenType()
+    {
+        return principal.FindFirst(Claims.TokenType)?.Value ?? string.Empty;
+    }
+}

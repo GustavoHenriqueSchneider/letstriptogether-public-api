@@ -32,8 +32,8 @@ public class GetGroupByIdHandlerTests
             UpdatedAt = DateTime.UtcNow,
             Preferences = new GetGroupByIdPreferenceResponse
             {
-                LikesCommercial = true,
-                Food = new List<string> { "Italian" },
+                LikesShopping = true,
+                LikesGastronomy = true,
                 Culture = new List<string> { "Museums" },
                 Entertainment = new List<string> { "Concerts" },
                 PlaceTypes = new List<string> { "Beach" }

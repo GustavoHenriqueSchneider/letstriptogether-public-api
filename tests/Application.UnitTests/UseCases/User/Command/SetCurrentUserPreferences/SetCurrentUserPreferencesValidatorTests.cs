@@ -21,8 +21,8 @@ public class SetCurrentUserPreferencesValidatorTests
         // Arrange
         var command = new SetCurrentUserPreferencesCommand
         {
-            LikesCommercial = true,
-            Food = new List<string> { "Italian", "Japanese" },
+            LikesShopping = true,
+            LikesGastronomy = true,
             Culture = new List<string> { "Museums", "Theaters" },
             Entertainment = new List<string> { "Concerts", "Sports" },
             PlaceTypes = new List<string> { "Beach", "Mountain" }
@@ -41,8 +41,8 @@ public class SetCurrentUserPreferencesValidatorTests
         // Arrange
         var command = new SetCurrentUserPreferencesCommand
         {
-            LikesCommercial = true,
-            Food = new List<string>(),
+            LikesShopping = true,
+            LikesGastronomy = true,
             Culture = new List<string> { "Museums" },
             Entertainment = new List<string> { "Concerts" },
             PlaceTypes = new List<string> { "Beach" }
@@ -61,8 +61,8 @@ public class SetCurrentUserPreferencesValidatorTests
         // Arrange
         var command = new SetCurrentUserPreferencesCommand
         {
-            LikesCommercial = true,
-            Food = new List<string> { "Italian" },
+            LikesShopping = true,
+            LikesGastronomy = true,
             Culture = new List<string>(),
             Entertainment = new List<string> { "Concerts" },
             PlaceTypes = new List<string> { "Beach" }
@@ -81,8 +81,8 @@ public class SetCurrentUserPreferencesValidatorTests
         // Arrange
         var command = new SetCurrentUserPreferencesCommand
         {
-            LikesCommercial = true,
-            Food = new List<string> { "Italian" },
+            LikesShopping = true,
+            LikesGastronomy = true,
             Culture = new List<string> { "Museums" },
             Entertainment = new List<string>(),
             PlaceTypes = new List<string> { "Beach" }
@@ -101,8 +101,8 @@ public class SetCurrentUserPreferencesValidatorTests
         // Arrange
         var command = new SetCurrentUserPreferencesCommand
         {
-            LikesCommercial = true,
-            Food = new List<string> { "Italian" },
+            LikesShopping = true,
+            LikesGastronomy = true,
             Culture = new List<string> { "Museums" },
             Entertainment = new List<string> { "Concerts" },
             PlaceTypes = new List<string>()
