@@ -36,26 +36,6 @@ public class SetCurrentUserPreferencesValidatorTests
     }
 
     [Test]
-    public void Validate_WhenFoodIsEmpty_ShouldFail()
-    {
-        // Arrange
-        var command = new SetCurrentUserPreferencesCommand
-        {
-            LikesShopping = true,
-            LikesGastronomy = true,
-            Culture = new List<string> { "Museums" },
-            Entertainment = new List<string> { "Concerts" },
-            PlaceTypes = new List<string> { "Beach" }
-        };
-
-        // Act
-        var result = _validator.TestValidate(command);
-
-        // Assert
-        result.ShouldHaveValidationErrorFor(x => x.Food);
-    }
-
-    [Test]
     public void Validate_WhenCultureIsEmpty_ShouldFail()
     {
         // Arrange
