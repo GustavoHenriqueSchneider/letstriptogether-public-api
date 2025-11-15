@@ -3,10 +3,12 @@ using Application.Common.Interfaces;
 using Application.Common.Interfaces.Services;
 using Infrastructure.Configurations;
 using Infrastructure.Events.GroupMatchCreated;
+using Infrastructure.HealthChecks;
 using Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Infrastructure;
@@ -17,7 +19,17 @@ public static class DependencyInjection
         this IServiceCollection services, IConfiguration configuration)
     {
         services.AddServices(configuration);
+        services.RegisterHealthChecks(configuration);
         return services;
+    }
+    
+    private static void RegisterHealthChecks(this IServiceCollection services, IConfiguration configuration)
+    {
+        services
+            .AddHealthChecks()
+            .AddCheck<InternalApiHealthCheck>(
+                "internal_api",
+                tags: new[] { "internal", "api" });
     }
 
     public static void RegisterApplicationAuthentication(this IServiceCollection services, IConfiguration configuration)

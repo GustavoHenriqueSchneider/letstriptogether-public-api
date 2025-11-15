@@ -1,0 +1,10 @@
+using MediatR;
+
+namespace Application.UseCases.v1.GroupMatch.Query.GetGroupMatchById;
+
+public class GetGroupMatchByIdQuery : IRequest<GetGroupMatchByIdResponse>
+{
+    public Guid GroupId { get; init; }
+    public Guid MatchId { get; init; }
+}
+

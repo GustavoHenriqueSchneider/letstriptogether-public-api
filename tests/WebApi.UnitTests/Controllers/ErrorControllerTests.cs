@@ -1,6 +1,8 @@
 using Application.Common.Exceptions;
+using Application.UseCases.Error.Query.GetError;
 using Domain.Common.Exceptions;
 using FluentAssertions;
+using MediatR;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
@@ -15,6 +17,7 @@ namespace WebApi.UnitTests.Controllers;
 public class ErrorControllerTests
 {
     private ErrorController _controller = null!;
+    private Mock<IMediator> _mediatorMock = null!;
     private Mock<IExceptionHandlerPathFeature> _exceptionHandlerPathFeatureMock = null!;
     private Mock<HttpContext> _httpContextMock = null!;
     private Mock<IFeatureCollection> _featureCollectionMock = null!;
@@ -22,7 +25,8 @@ public class ErrorControllerTests
     [SetUp]
     public void SetUp()
     {
-        _controller = new ErrorController();
+        _mediatorMock = new Mock<IMediator>();
+        _controller = new ErrorController(_mediatorMock.Object);
         _exceptionHandlerPathFeatureMock = new Mock<IExceptionHandlerPathFeature>();
         _httpContextMock = new Mock<HttpContext>();
         _featureCollectionMock = new Mock<IFeatureCollection>();
@@ -35,7 +39,7 @@ public class ErrorControllerTests
     }
 
     [Test]
-    public void Error_WhenBaseException_ShouldReturnProblemDetailsWithStatusCode()
+    public async Task Error_WhenBaseException_ShouldReturnProblemDetailsWithStatusCode()
     {
         // Arrange
         var exception = new BadRequestException(
@@ -52,22 +56,36 @@ public class ErrorControllerTests
             .Setup(x => x.Get<IExceptionHandlerPathFeature>())
             .Returns(_exceptionHandlerPathFeatureMock.Object);
 
+        var expectedResponse = new GetErrorResponse
+        {
+            Status = 400,
+            Title = "Bad Request",
+            Detail = "Invalid request",
+            Instance = "/api/test"
+        };
+
+        _mediatorMock
+            .Setup(x => x.Send(It.Is<GetErrorQuery>(q => 
+                q.Exception == exception && q.Path == "/api/test"), 
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(expectedResponse);
+
         // Act
-        var result = _controller.Error() as ObjectResult;
+        var result = await _controller.Error() as ObjectResult;
 
         // Assert
         result.Should().NotBeNull();
         result!.StatusCode.Should().Be(400);
-        var problemDetails = result.Value as ProblemDetails;
-        problemDetails.Should().NotBeNull();
-        problemDetails!.Status.Should().Be(400);
-        problemDetails.Title.Should().Be("Bad Request");
-        problemDetails.Detail.Should().Be("Invalid request");
-        problemDetails.Instance.Should().Be("/api/test");
+        var response = result.Value as GetErrorResponse;
+        response.Should().NotBeNull();
+        response!.Status.Should().Be(400);
+        response.Title.Should().Be("Bad Request");
+        response.Detail.Should().Be("Invalid request");
+        response.Instance.Should().Be("/api/test");
     }
 
     [Test]
-    public void Error_WhenValidationException_ShouldReturnProblemDetailsWithErrors()
+    public async Task Error_WhenValidationException_ShouldReturnProblemDetailsWithErrors()
     {
         // Arrange
         var errors = new Dictionary<string, string[]>
@@ -83,19 +101,34 @@ public class ErrorControllerTests
             .Setup(x => x.Get<IExceptionHandlerPathFeature>())
             .Returns(_exceptionHandlerPathFeatureMock.Object);
 
+        var expectedResponse = new GetErrorResponse
+        {
+            Status = 400,
+            Title = "An error occurred",
+            Detail = exception.Message,
+            Instance = "/api/test",
+            Extensions = new Dictionary<string, object> { { "errors", errors } }
+        };
+
+        _mediatorMock
+            .Setup(x => x.Send(It.Is<GetErrorQuery>(q => 
+                q.Exception == exception && q.Path == "/api/test"), 
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(expectedResponse);
+
         // Act
-        var result = _controller.Error() as ObjectResult;
+        var result = await _controller.Error() as ObjectResult;
 
         // Assert
         result.Should().NotBeNull();
-        var problemDetails = result!.Value as ProblemDetails;
-        problemDetails.Should().NotBeNull();
-        problemDetails!.Extensions.Should().ContainKey("errors");
-        problemDetails.Extensions["errors"].Should().BeEquivalentTo(errors);
+        var response = result!.Value as GetErrorResponse;
+        response.Should().NotBeNull();
+        response!.Extensions.Should().ContainKey("errors");
+        response.Extensions!["errors"].Should().BeEquivalentTo(errors);
     }
 
     [Test]
-    public void Error_WhenDomainBusinessRuleException_ShouldReturnProblemDetails()
+    public async Task Error_WhenDomainBusinessRuleException_ShouldReturnProblemDetails()
     {
         // Arrange
         var exception = new DomainBusinessRuleException(
@@ -112,21 +145,35 @@ public class ErrorControllerTests
             .Setup(x => x.Get<IExceptionHandlerPathFeature>())
             .Returns(_exceptionHandlerPathFeatureMock.Object);
 
+        var expectedResponse = new GetErrorResponse
+        {
+            Status = 422,
+            Title = "Business Rule Violation",
+            Detail = "Business rule violated",
+            Instance = "/api/test"
+        };
+
+        _mediatorMock
+            .Setup(x => x.Send(It.Is<GetErrorQuery>(q => 
+                q.Exception == exception && q.Path == "/api/test"), 
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(expectedResponse);
+
         // Act
-        var result = _controller.Error() as ObjectResult;
+        var result = await _controller.Error() as ObjectResult;
 
         // Assert
         result.Should().NotBeNull();
         result!.StatusCode.Should().Be(422);
-        var problemDetails = result.Value as ProblemDetails;
-        problemDetails.Should().NotBeNull();
-        problemDetails!.Status.Should().Be(422);
-        problemDetails.Title.Should().Be("Business Rule Violation");
-        problemDetails.Detail.Should().Be("Business rule violated");
+        var response = result.Value as GetErrorResponse;
+        response.Should().NotBeNull();
+        response!.Status.Should().Be(422);
+        response.Title.Should().Be("Business Rule Violation");
+        response.Detail.Should().Be("Business rule violated");
     }
 
     [Test]
-    public void Error_WhenGenericException_ShouldReturnInternalServerError()
+    public async Task Error_WhenGenericException_ShouldReturnInternalServerError()
     {
         // Arrange
         var exception = new Exception("Something went wrong");
@@ -137,20 +184,34 @@ public class ErrorControllerTests
             .Setup(x => x.Get<IExceptionHandlerPathFeature>())
             .Returns(_exceptionHandlerPathFeatureMock.Object);
 
+        var expectedResponse = new GetErrorResponse
+        {
+            Status = 500,
+            Title = "An error occurred while processing your request",
+            Detail = "Something went wrong",
+            Instance = "/api/test"
+        };
+
+        _mediatorMock
+            .Setup(x => x.Send(It.Is<GetErrorQuery>(q => 
+                q.Exception == exception && q.Path == "/api/test"), 
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(expectedResponse);
+
         // Act
-        var result = _controller.Error() as ObjectResult;
+        var result = await _controller.Error() as ObjectResult;
 
         // Assert
         result.Should().NotBeNull();
         result!.StatusCode.Should().Be(500);
-        var problemDetails = result.Value as ProblemDetails;
-        problemDetails.Should().NotBeNull();
-        problemDetails!.Status.Should().Be(500);
-        problemDetails.Title.Should().Be("An error occurred while processing your request");
+        var response = result.Value as GetErrorResponse;
+        response.Should().NotBeNull();
+        response!.Status.Should().Be(500);
+        response.Title.Should().Be("An error occurred while processing your request");
     }
 
     [Test]
-    public void Error_WhenBaseExceptionHasNoTitle_ShouldUseDefaultTitle()
+    public async Task Error_WhenBaseExceptionHasNoTitle_ShouldUseDefaultTitle()
     {
         // Arrange
         var exception = new NotFoundException(
@@ -167,33 +228,61 @@ public class ErrorControllerTests
             .Setup(x => x.Get<IExceptionHandlerPathFeature>())
             .Returns(_exceptionHandlerPathFeatureMock.Object);
 
+        var expectedResponse = new GetErrorResponse
+        {
+            Status = 404,
+            Title = "",
+            Detail = "Not found",
+            Instance = "/api/test"
+        };
+
+        _mediatorMock
+            .Setup(x => x.Send(It.Is<GetErrorQuery>(q => 
+                q.Exception == exception && q.Path == "/api/test"), 
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(expectedResponse);
+
         // Act
-        var result = _controller.Error() as ObjectResult;
+        var result = await _controller.Error() as ObjectResult;
 
         // Assert
         result.Should().NotBeNull();
-        var problemDetails = result!.Value as ProblemDetails;
-        problemDetails.Should().NotBeNull();
-        problemDetails!.Title.Should().Be("");
+        var response = result!.Value as GetErrorResponse;
+        response.Should().NotBeNull();
+        response!.Title.Should().Be("");
     }
 
     [Test]
-    public void Error_WhenExceptionHandlerPathFeatureIsNull_ShouldReturnInternalServerError()
+    public async Task Error_WhenExceptionHandlerPathFeatureIsNull_ShouldReturnInternalServerError()
     {
         // Arrange
         _featureCollectionMock
             .Setup(x => x.Get<IExceptionHandlerPathFeature>())
             .Returns((IExceptionHandlerPathFeature?)null);
 
+        var expectedResponse = new GetErrorResponse
+        {
+            Status = 500,
+            Title = "An error occurred while processing your request",
+            Detail = null,
+            Instance = string.Empty
+        };
+
+        _mediatorMock
+            .Setup(x => x.Send(It.Is<GetErrorQuery>(q => 
+                q.Exception == null && q.Path == string.Empty), 
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(expectedResponse);
+
         // Act
-        var result = _controller.Error() as ObjectResult;
+        var result = await _controller.Error() as ObjectResult;
 
         // Assert
         result.Should().NotBeNull();
         result!.StatusCode.Should().Be(500);
-        var problemDetails = result.Value as ProblemDetails;
-        problemDetails.Should().NotBeNull();
-        problemDetails!.Status.Should().Be(500);
-        problemDetails.Instance.Should().BeEmpty();
+        var response = result.Value as GetErrorResponse;
+        response.Should().NotBeNull();
+        response!.Status.Should().Be(500);
+        response.Instance.Should().BeEmpty();
     }
 }

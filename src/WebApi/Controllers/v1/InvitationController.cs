@@ -1,6 +1,6 @@
-using Application.UseCases.Invitation.Command.AcceptInvitation;
-using Application.UseCases.Invitation.Command.RefuseInvitation;
-using Application.UseCases.Invitation.Query.GetInvitation;
+using Application.UseCases.v1.Invitation.Command.AcceptInvitation;
+using Application.UseCases.v1.Invitation.Command.RefuseInvitation;
+using Application.UseCases.v1.Invitation.Query.GetInvitation;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

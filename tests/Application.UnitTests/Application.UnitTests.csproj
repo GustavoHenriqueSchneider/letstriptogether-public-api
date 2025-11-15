@@ -23,4 +23,8 @@
         <ProjectReference Include="..\..\src\Application\Application.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="UseCases\v1\" />
+    </ItemGroup>
+
 </Project>

@@ -1,6 +1,6 @@
-using Application.UseCases.GroupMatch.Command.RemoveGroupMatchById;
-using Application.UseCases.GroupMatch.Query.GetAllGroupMatchesById;
-using Application.UseCases.GroupMatch.Query.GetGroupMatchById;
+using Application.UseCases.v1.GroupMatch.Command.RemoveGroupMatchById;
+using Application.UseCases.v1.GroupMatch.Query.GetAllGroupMatchesById;
+using Application.UseCases.v1.GroupMatch.Query.GetGroupMatchById;
 using FluentAssertions;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;

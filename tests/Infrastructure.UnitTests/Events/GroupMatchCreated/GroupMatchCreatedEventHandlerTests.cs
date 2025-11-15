@@ -1,8 +1,8 @@
 using System.Text.Json;
 using Application.Common.Interfaces.Services;
-using Application.UseCases.Destination.Query.GetDestinationById;
-using Application.UseCases.Group.Query.GetGroupById;
-using Application.UseCases.Notification.Command.ProcessNotification;
+using Application.UseCases.v1.Destination.Query.GetDestinationById;
+using Application.UseCases.v1.Group.Query.GetGroupById;
+using Application.UseCases.v1.Notification.Command.ProcessNotification;
 using Domain.Events;
 using FluentAssertions;
 using Infrastructure.Events.GroupMatchCreated;

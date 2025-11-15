@@ -1,4 +1,4 @@
-using Application.UseCases.Notification.Command.ProcessNotification;
+using Application.UseCases.v1.Notification.Command.ProcessNotification;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

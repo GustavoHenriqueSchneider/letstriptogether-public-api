@@ -1,5 +1,5 @@
 using Application.Common.Interfaces.Services;
-using Application.UseCases.User.Command.ChangeCurrentUserPassword;
+using Application.UseCases.v1.User.Command.ChangeCurrentUserPassword;
 using FluentAssertions;
 using Infrastructure.Services;
 using Moq;

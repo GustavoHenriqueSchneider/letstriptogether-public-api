@@ -1,6 +1,6 @@
-using Application.UseCases.GroupInvitation.Command.CancelActiveGroupInvitation;
-using Application.UseCases.GroupInvitation.Command.CreateGroupInvitation;
-using Application.UseCases.GroupInvitation.Query.GetActiveGroupInvitation;
+using Application.UseCases.v1.GroupInvitation.Command.CancelActiveGroupInvitation;
+using Application.UseCases.v1.GroupInvitation.Command.CreateGroupInvitation;
+using Application.UseCases.v1.GroupInvitation.Query.GetActiveGroupInvitation;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

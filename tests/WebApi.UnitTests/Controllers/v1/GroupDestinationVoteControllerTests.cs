@@ -1,7 +1,7 @@
-using Application.UseCases.GroupDestinationVote.Command.UpdateDestinationVoteById;
-using Application.UseCases.GroupDestinationVote.Command.VoteAtDestinationForGroupId;
-using Application.UseCases.GroupDestinationVote.Query.GetGroupDestinationVoteById;
-using Application.UseCases.GroupDestinationVote.Query.GetGroupMemberAllDestinationVotesById;
+using Application.UseCases.v1.GroupDestinationVote.Command.UpdateDestinationVoteById;
+using Application.UseCases.v1.GroupDestinationVote.Command.VoteAtDestinationForGroupId;
+using Application.UseCases.v1.GroupDestinationVote.Query.GetGroupDestinationVoteById;
+using Application.UseCases.v1.GroupDestinationVote.Query.GetGroupMemberAllDestinationVotesById;
 using FluentAssertions;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;

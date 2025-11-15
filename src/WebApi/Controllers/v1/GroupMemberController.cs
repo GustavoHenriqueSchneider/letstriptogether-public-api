@@ -1,6 +1,6 @@
-using Application.UseCases.GroupMember.Command.RemoveGroupMemberById;
-using Application.UseCases.GroupMember.Query.GetGroupMemberById;
-using Application.UseCases.GroupMember.Query.GetOtherGroupMembersById;
+using Application.UseCases.v1.GroupMember.Command.RemoveGroupMemberById;
+using Application.UseCases.v1.GroupMember.Query.GetGroupMemberById;
+using Application.UseCases.v1.GroupMember.Query.GetOtherGroupMembersById;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

@@ -1,0 +1,16 @@
+using FluentValidation;
+
+namespace Application.UseCases.v1.Group.Query.GetAllGroups;
+
+public class GetAllGroupsValidator : AbstractValidator<GetAllGroupsQuery>
+{
+    public GetAllGroupsValidator()
+    {
+        RuleFor(x => x.PageNumber)
+            .GreaterThan(0);
+
+        RuleFor(x => x.PageSize)
+            .GreaterThan(0);
+    }
+}
+
