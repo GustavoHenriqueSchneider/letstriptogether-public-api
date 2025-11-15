@@ -7,8 +7,8 @@ using Swashbuckle.AspNetCore.Annotations;
 namespace WebApi.Controllers.v1;
 
 [ApiController]
+[Authorize]
 [ApiExplorerSettings(IgnoreApi = true)]
-[AllowAnonymous]
 [Route("api/v{version:apiVersion}/notifications")]
 public class NotificationController(IMediator mediator) : ControllerBase
 {

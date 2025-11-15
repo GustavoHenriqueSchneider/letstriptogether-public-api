@@ -29,7 +29,9 @@ using Application.UseCases.GroupMember.Query.GetGroupMemberById;
 using Application.UseCases.GroupMember.Query.GetOtherGroupMembersById;
 using Application.UseCases.Invitation.Command.AcceptInvitation;
 using Application.UseCases.Invitation.Command.RefuseInvitation;
+using Application.UseCases.Invitation.Query.GetInvitation;
 using Application.UseCases.User.Command.AnonymizeCurrentUser;
+using Application.UseCases.User.Command.ChangeCurrentUserPassword;
 using Application.UseCases.User.Command.DeleteCurrentUser;
 using Application.UseCases.User.Command.SetCurrentUserPreferences;
 using Application.UseCases.User.Command.UpdateCurrentUser;
@@ -54,6 +56,7 @@ public interface IInternalApiService
     Task DeleteCurrentUserAsync(DeleteCurrentUserCommand request, CancellationToken cancellationToken);
     Task AnonymizeCurrentUserAsync(AnonymizeCurrentUserCommand request, CancellationToken cancellationToken);
     Task SetCurrentUserPreferencesAsync(SetCurrentUserPreferencesCommand request, CancellationToken cancellationToken);
+    Task ChangeCurrentUserPasswordAsync(ChangeCurrentUserPasswordCommand request, CancellationToken cancellationToken);
     Task<CreateGroupResponse> CreateGroupAsync(CreateGroupCommand request, CancellationToken cancellationToken);
     Task<GetAllGroupsResponse> GetAllGroupsAsync(GetAllGroupsQuery request, CancellationToken cancellationToken);
     Task<GetGroupByIdResponse> GetGroupByIdAsync(GetGroupByIdQuery request, CancellationToken cancellationToken);
@@ -88,5 +91,6 @@ public interface IInternalApiService
     Task RemoveGroupMemberByIdAsync(RemoveGroupMemberByIdCommand request, CancellationToken cancellationToken);
     Task AcceptInvitationAsync(AcceptInvitationCommand request, CancellationToken cancellationToken);
     Task RefuseInvitationAsync(RefuseInvitationCommand request, CancellationToken cancellationToken);
+    Task<GetInvitationResponse> GetInvitationAsync(GetInvitationQuery request, CancellationToken cancellationToken);
 }
 

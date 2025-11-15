@@ -14,11 +14,11 @@ public class Startup(IConfiguration configuration, IWebHostEnvironment environme
         services.RegisterApplicationApiServices();
         services.AddHealthChecks();
         
-        var allowedOrigins = 
+        var allowedOrigins =
             configuration.GetRequiredSection("CorsSettings:AllowedOrigins").Get<string[]>();
         
-        services.AddCors(options => 
-            options.AddDefaultPolicy(builder => 
+        services.AddCors(options =>
+            options.AddDefaultPolicy(builder =>
                 builder.WithOrigins(allowedOrigins!).AllowAnyMethod().AllowAnyHeader().AllowCredentials()));
         
         services.AddSignalR(options => options.EnableDetailedErrors = environment.IsDevelopment());

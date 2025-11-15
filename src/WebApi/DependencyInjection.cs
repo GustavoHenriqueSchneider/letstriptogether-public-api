@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using WebApi.Services;
+using Application.Common.Interfaces.Services;
 
 namespace WebApi;
 
@@ -69,6 +71,7 @@ public static class DependencyInjection
             })
             .AddFluentValidationRulesToSwagger();
 
+        services.AddScoped<IRealTimeNotificationService, RealTimeNotificationService>();
         services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
     }
 }

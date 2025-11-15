@@ -30,7 +30,9 @@ using Application.UseCases.GroupMember.Query.GetGroupMemberById;
 using Application.UseCases.GroupMember.Query.GetOtherGroupMembersById;
 using Application.UseCases.Invitation.Command.AcceptInvitation;
 using Application.UseCases.Invitation.Command.RefuseInvitation;
+using Application.UseCases.Invitation.Query.GetInvitation;
 using Application.UseCases.User.Command.AnonymizeCurrentUser;
+using Application.UseCases.User.Command.ChangeCurrentUserPassword;
 using Application.UseCases.User.Command.DeleteCurrentUser;
 using Application.UseCases.User.Command.SetCurrentUserPreferences;
 using Application.UseCases.User.Command.UpdateCurrentUser;
@@ -107,6 +109,11 @@ public class InternalApiService(IHttpClientService httpClientService) : IInterna
     public async Task SetCurrentUserPreferencesAsync(SetCurrentUserPreferencesCommand request, CancellationToken cancellationToken)
     {
         await httpClientService.PutAsync("v1/users/me/preferences", request, cancellationToken);
+    }
+
+    public async Task ChangeCurrentUserPasswordAsync(ChangeCurrentUserPasswordCommand request, CancellationToken cancellationToken)
+    {
+        await httpClientService.PostAsync("v1/users/me/change-password", request, cancellationToken);
     }
 
     public async Task<CreateGroupResponse> CreateGroupAsync(CreateGroupCommand request, CancellationToken cancellationToken)
@@ -257,5 +264,11 @@ public class InternalApiService(IHttpClientService httpClientService) : IInterna
     public async Task RefuseInvitationAsync(RefuseInvitationCommand request, CancellationToken cancellationToken)
     {
         await httpClientService.PostAsync("v1/invitations/refuse", request, cancellationToken);
+    }
+
+    public async Task<GetInvitationResponse> GetInvitationAsync(GetInvitationQuery request, CancellationToken cancellationToken)
+    {
+        var token = Uri.EscapeDataString(request.Token);
+        return await httpClientService.GetAsync<GetInvitationResponse>($"v1/invitations?token={token}", cancellationToken);
     }
 }

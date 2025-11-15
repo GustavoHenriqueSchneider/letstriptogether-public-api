@@ -9,10 +9,10 @@ using Microsoft.AspNetCore.Http;
 
 namespace Infrastructure.Services;
 
-public class HttpClientService : IHttpClientService
+public class HttpClientService(
+    HttpClient httpClient, 
+    IHttpContextAccessor httpContextAccessor) : IHttpClientService
 {
-    private readonly HttpClient _httpClient;
-    private readonly IHttpContextAccessor _httpContextAccessor;
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
@@ -20,15 +20,9 @@ public class HttpClientService : IHttpClientService
         WriteIndented = false
     };
 
-    public HttpClientService(HttpClient httpClient, IHttpContextAccessor httpContextAccessor)
-    {
-        _httpClient = httpClient;
-        _httpContextAccessor = httpContextAccessor;
-    }
-
     private void SetAuthentication(HttpRequestMessage httpRequestMessage)
     {
-        var httpContext = _httpContextAccessor.HttpContext;
+        var httpContext = httpContextAccessor.HttpContext;
         if (httpContext?.Request.Headers.ContainsKey("Authorization") != true)
         {
             return;
@@ -39,6 +33,18 @@ public class HttpClientService : IHttpClientService
         {
             httpRequestMessage.Headers.Add("Authorization", authorizationHeader);
         }
+    }
+    
+    private static void SetRequestBody(HttpRequestMessage request, IBaseRequest? body)
+    {
+        if (body is null)
+        {
+            return;
+        }
+        
+        var json = JsonSerializer.Serialize(body, body.GetType(), JsonOptions);
+        var content = new StringContent(json, Encoding.UTF8, "application/json");
+        request.Content = content;
     }
     
     private async Task<HttpResponseMessage> SendRequestAsync(HttpMethod method, string url, 
@@ -52,17 +58,11 @@ public class HttpClientService : IHttpClientService
             "DELETE" => new HttpRequestMessage(HttpMethod.Delete, url),
             _ => new HttpRequestMessage(HttpMethod.Patch, url)
         };
-
-        if (request is not null)
-        {
-            var json = JsonSerializer.Serialize(request, request.GetType(), JsonOptions);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
-            httpRequestMessage.Content = content;
-        }
         
         SetAuthentication(httpRequestMessage);
+        SetRequestBody(httpRequestMessage, request);
         
-        var response = await _httpClient.SendAsync(httpRequestMessage, cancellationToken);
+        var response = await httpClient.SendAsync(httpRequestMessage, cancellationToken);
 
         try
         {
@@ -86,7 +86,7 @@ public class HttpClientService : IHttpClientService
             };
         }
     }
-    
+
     private async Task<T> GetContentAsync<T>(HttpResponseMessage response, CancellationToken cancellationToken)
     {
         return await response.Content.ReadFromJsonAsync<T>(JsonOptions, cancellationToken)

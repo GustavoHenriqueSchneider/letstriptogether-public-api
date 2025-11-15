@@ -19,7 +19,7 @@ public class ProcessNotificationHandler : IRequestHandler<ProcessNotificationCom
 
     public async Task Handle(ProcessNotificationCommand request, CancellationToken cancellationToken)
     {
-        var handler = _eventHandlers.FirstOrDefault(h => h.CanHandle(request.EventName));
+        var handler = _eventHandlers.SingleOrDefault(h => h.CanHandle(request.EventName));
 
         if (handler is null)
         {

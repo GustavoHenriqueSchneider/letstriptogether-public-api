@@ -1,23 +1,24 @@
 using System.Text.Json;
 using Application.Common.Interfaces;
+using Application.Common.Interfaces.Services;
+using Application.UseCases.Destination.Query.GetDestinationById;
+using Application.UseCases.Group.Query.GetGroupById;
 using Application.UseCases.Notification.Command.ProcessNotification;
+using Domain.Common;
 using Domain.Events;
 using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.Events.GroupMatchCreated;
 
-public class GroupMatchCreatedEventHandler : INotificationEventHandler
+public class GroupMatchCreatedEventHandler(
+    ILogger<GroupMatchCreatedEventHandler> logger,
+    IRealTimeNotificationService realTimeNotificationService,
+    IInternalApiService internalApiService) : INotificationEventHandler
 {
-    private readonly ILogger<GroupMatchCreatedEventHandler> _logger;
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase
     };
-
-    public GroupMatchCreatedEventHandler(ILogger<GroupMatchCreatedEventHandler> logger)
-    {
-        _logger = logger;
-    }
 
     public bool CanHandle(string eventName)
     {
@@ -30,13 +31,56 @@ public class GroupMatchCreatedEventHandler : INotificationEventHandler
         
         if (eventData is null)
         {
+            logger.LogWarning("GroupMatchCreated event data could not be deserialized for user {UserId}", 
+                command.UserId);
             return;
         }
 
-        // TODO: Implementar lógica de processamento da notificação
-        // Por exemplo: enviar push notification, email, salvar no banco, etc.
-        
-        await Task.CompletedTask;
+        if (command.UserId == Guid.Empty)
+        {
+            logger.LogWarning(
+                "GroupMatchCreated event received without user id. EventData {@EventData}", eventData);
+            return;
+        }
+
+        GetGroupByIdResponse group;
+
+        try
+        {
+            group = await internalApiService.GetGroupByIdAsync(
+                new GetGroupByIdQuery { GroupId = eventData.GroupId }, cancellationToken);
+        }
+        catch
+        {
+            logger.LogWarning(
+                "Group not found for GroupMatchCreated event. EventData {@EventData}", eventData);
+            return;
+        }
+
+        GetDestinationByIdResponse destination;
+
+        try
+        {
+            destination = await internalApiService.GetDestinationByIdAsync(
+                new GetDestinationByIdQuery { DestinationId = eventData.DestinationId }, cancellationToken);
+        }
+        catch
+        {
+            logger.LogWarning(
+                "Destination not found for GroupMatchCreated event. EventData {@EventData}",
+                eventData);
+            return;
+        }
+
+        var payload = new RealTimeNotification
+        {
+            Type = "match",
+            Title = "Novo match!",
+            Message = $"O grupo '{group.Name}' encontrou um destino perfeito: {destination.Place}",
+            CreatedAt = command.CreatedAt
+        };
+
+        await realTimeNotificationService.SendToUserAsync(command.UserId, payload, cancellationToken);
     }
 
     private static GroupMatchCreatedEventData? DeserializeEventData(object data)
