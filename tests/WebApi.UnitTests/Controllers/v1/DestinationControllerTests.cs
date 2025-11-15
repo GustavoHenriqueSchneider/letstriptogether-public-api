@@ -30,6 +30,7 @@ public class DestinationControllerTests
         {
             Place = "Test Place",
             Description = "Test Description",
+            Image = "https://example.com/image.jpg",
             Attractions = new List<DestinationAttractionModel>(),
             CreatedAt = DateTime.UtcNow
         };

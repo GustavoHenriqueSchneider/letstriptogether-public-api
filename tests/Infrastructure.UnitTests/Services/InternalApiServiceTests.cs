@@ -31,6 +31,7 @@ using Application.UseCases.GroupMember.Query.GetGroupMemberById;
 using Application.UseCases.GroupMember.Query.GetOtherGroupMembersById;
 using Application.UseCases.Invitation.Command.AcceptInvitation;
 using Application.UseCases.Invitation.Command.RefuseInvitation;
+using Application.UseCases.Invitation.Query.GetInvitation;
 using Application.UseCases.User.Command.AnonymizeCurrentUser;
 using Application.UseCases.User.Command.DeleteCurrentUser;
 using Application.UseCases.User.Command.SetCurrentUserPreferences;
@@ -405,6 +406,7 @@ public class InternalApiServiceTests
             Name = "Test Group",
             TripExpectedDate = DateTime.UtcNow.AddDays(30),
             CreatedAt = DateTime.UtcNow,
+            IsCurrentMemberOwner = false,
             Preferences = new GetGroupByIdPreferenceResponse
             {
                 LikesShopping = true,
@@ -541,7 +543,8 @@ public class InternalApiServiceTests
             Place = "Test Place",
             Description = "Test Description",
             Attractions = new List<DestinationAttractionModel>(),
-            CreatedAt = DateTime.UtcNow
+            CreatedAt = DateTime.UtcNow,
+            Image = "https://example.com/image.jpg"
         };
 
         _httpClientServiceMock
@@ -1003,6 +1006,34 @@ public class InternalApiServiceTests
         _httpClientServiceMock.Verify(
             x => x.PostAsync(
                 "v1/invitations/refuse", command, It.IsAny<CancellationToken>()),
+            Times.Once);
+    }
+
+    [Test]
+    public async Task GetInvitationAsync_ShouldCallHttpClientServiceWithQueryParameter()
+    {
+        // Arrange
+        var query = new GetInvitationQuery { Token = "invitation token" };
+        var expectedResponse = new GetInvitationResponse
+        {
+            CreatedBy = "Test User",
+            GroupName = "Trip Group",
+            IsActive = true
+        };
+
+        _httpClientServiceMock
+            .Setup(x => x.GetAsync<GetInvitationResponse>(
+                "v1/invitations?token=invitation%20token", It.IsAny<CancellationToken>()))
+            .ReturnsAsync(expectedResponse);
+
+        // Act
+        var result = await _internalApiService.GetInvitationAsync(query, CancellationToken.None);
+
+        // Assert
+        result.Should().Be(expectedResponse);
+        _httpClientServiceMock.Verify(
+            x => x.GetAsync<GetInvitationResponse>(
+                "v1/invitations?token=invitation%20token", It.IsAny<CancellationToken>()),
             Times.Once);
     }
 

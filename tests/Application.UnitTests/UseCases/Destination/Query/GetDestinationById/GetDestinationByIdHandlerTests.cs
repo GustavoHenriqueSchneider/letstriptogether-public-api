@@ -28,6 +28,7 @@ public class GetDestinationByIdHandlerTests
         {
             Place = "Test Place",
             Description = "Test Description",
+            Image = "https://example.com/image.jpg",
             Attractions = new List<DestinationAttractionModel>(),
             CreatedAt = DateTime.UtcNow
         };

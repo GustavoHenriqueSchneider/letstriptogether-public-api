@@ -39,6 +39,7 @@ public class DestinationAttractionModelTests
         {
             Place = "Paris",
             Description = "City of Lights",
+            Image = "https://example.com/paris.jpg",
             Attractions = new List<DestinationAttractionModel> { attraction },
             CreatedAt = DateTime.UtcNow
         };
@@ -75,6 +76,7 @@ public class DestinationAttractionModelTests
         {
             Place = "Test Place",
             Description = "Test Description",
+            Image = "https://example.com/test.jpg",
             Attractions = attractions,
             CreatedAt = DateTime.UtcNow
         };
@@ -93,6 +95,7 @@ public class DestinationAttractionModelTests
         {
             Place = "Test Place",
             Description = "Test Description",
+            Image = "https://example.com/test.jpg",
             Attractions = new List<DestinationAttractionModel>(),
             CreatedAt = DateTime.UtcNow
         };

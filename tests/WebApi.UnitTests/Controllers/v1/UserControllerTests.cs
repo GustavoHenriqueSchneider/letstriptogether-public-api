@@ -1,4 +1,5 @@
 using Application.UseCases.User.Command.AnonymizeCurrentUser;
+using Application.UseCases.User.Command.ChangeCurrentUserPassword;
 using Application.UseCases.User.Command.DeleteCurrentUser;
 using Application.UseCases.User.Command.SetCurrentUserPreferences;
 using Application.UseCases.User.Command.UpdateCurrentUser;
@@ -124,6 +125,27 @@ public class UserControllerTests
 
         // Act
         var result = await _controller.SetCurrentUserPreferences(command, CancellationToken.None);
+
+        // Assert
+        result.Should().BeOfType<NoContentResult>();
+    }
+
+    [Test]
+    public async Task ChangePassword_WhenValid_ShouldReturnNoContent()
+    {
+        // Arrange
+        var command = new ChangeCurrentUserPasswordCommand
+        {
+            CurrentPassword = "currentPassword",
+            NewPassword = "newPassword"
+        };
+
+        _mediatorMock
+            .Setup(x => x.Send(It.IsAny<ChangeCurrentUserPasswordCommand>(), It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+
+        // Act
+        var result = await _controller.ChangePassword(command, CancellationToken.None);
 
         // Assert
         result.Should().BeOfType<NoContentResult>();

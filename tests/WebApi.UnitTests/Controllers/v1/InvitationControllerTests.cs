@@ -1,5 +1,6 @@
 using Application.UseCases.Invitation.Command.AcceptInvitation;
 using Application.UseCases.Invitation.Command.RefuseInvitation;
+using Application.UseCases.Invitation.Query.GetInvitation;
 using FluentAssertions;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -36,7 +37,7 @@ public class InvitationControllerTests
         var result = await _controller.AcceptInvitation(command, CancellationToken.None);
 
         // Assert
-        result.Should().BeOfType<OkResult>();
+        result.Should().BeOfType<NoContentResult>();
     }
 
     [Test]
@@ -53,6 +54,30 @@ public class InvitationControllerTests
         var result = await _controller.RefuseInvitation(command, CancellationToken.None);
 
         // Assert
-        result.Should().BeOfType<OkResult>();
+        result.Should().BeOfType<NoContentResult>();
+    }
+
+    [Test]
+    public async Task GetInvitation_WhenValid_ShouldReturnOkWithResponse()
+    {
+        // Arrange
+        var token = "token-value";
+        var expectedResponse = new GetInvitationResponse
+        {
+            CreatedBy = "Test User",
+            GroupName = "Trip Group",
+            IsActive = true
+        };
+
+        _mediatorMock
+            .Setup(x => x.Send(It.Is<GetInvitationQuery>(q => q.Token == token), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(expectedResponse);
+
+        // Act
+        var result = await _controller.GetInvitation(token, CancellationToken.None);
+
+        // Assert
+        result.Should().BeOfType<OkObjectResult>()
+            .Which.Value.Should().BeEquivalentTo(expectedResponse);
     }
 }

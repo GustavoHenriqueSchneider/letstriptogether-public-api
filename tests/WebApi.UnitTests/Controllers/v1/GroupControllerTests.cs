@@ -75,6 +75,7 @@ public class GroupControllerTests
             TripExpectedDate = DateTime.UtcNow.AddDays(30),
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow,
+            IsCurrentMemberOwner = true,
             Preferences = new GetGroupByIdPreferenceResponse
             {
                 LikesShopping = true,
