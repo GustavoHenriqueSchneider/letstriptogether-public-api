@@ -175,31 +175,26 @@ cd letstriptogether-public-api
 
 2. **Configurar variáveis de ambiente**
 
-Crie ou edite `src/WebApi/appsettings.Development.json` com as configurações necessárias:
-- **InternalApiSettings**: BaseAddress da API interna
-- **JsonWebTokenSettings**: Issuer e SecretKey (deve corresponder à API interna)
-- **CorsSettings**: AllowedOrigins para clientes frontend
-- **Swagger**: Habilitar/desabilitar documentação
+⚠️ **IMPORTANTE**: O arquivo `appsettings.Development.json` contém secrets e não deve ser commitado no repositório.
 
-Exemplo de configuração:
-```json
-{
-  "InternalApiSettings": {
-    "BaseAddress": "http://localhost:5088/api/"
-  },
-  "JsonWebTokenSettings": {
-    "Issuer": "http://localhost:5088",
-    "SecretKey": "qF6k9J8sL1vR2wE3tY4uP5oQ6rS7tU8v"
-  },
-  "CorsSettings": {
-    "AllowedOrigins": [
-      "http://localhost:3000"
-    ]
-  },
-  "Swagger": {
-    "Enabled": true
-  }
-}
+**Para desenvolvimento local:**
+1. Copie o arquivo de exemplo:
+   ```bash
+   cp src/WebApi/appsettings.Development.example.json src/WebApi/appsettings.Development.json
+   ```
+2. Edite `src/WebApi/appsettings.Development.json` e substitua os placeholders pelos valores reais:
+   - `{JWT_SECRET_KEY}`: Chave secreta JWT (deve corresponder à chave usada na API interna)
+   - Ajuste `BaseAddress` se necessário (padrão: `http://localhost:5088/api/`)
+   - Ajuste `AllowedOrigins` conforme necessário (padrão: `http://localhost:3000`)
+
+**Para Docker:**
+Configure as variáveis de ambiente no comando `docker run`:
+```bash
+docker run -p 5089:5089 \
+  -e JsonWebTokenSettings__SecretKey="your_jwt_secret_key" \
+  -e InternalApiSettings__BaseAddress="http://letstriptogether-internal-api:5088/api/" \
+  -e CorsSettings__AllowedOrigins__0="http://localhost:3000" \
+  letstriptogether-public-api
 ```
 
 3. **Executar a aplicação**
